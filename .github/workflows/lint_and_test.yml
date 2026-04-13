@@ -1,13 +1,10 @@
-# This workflow will do a clean install of python dependencies, run flake8 and pytests with the results of both being uploaded as artifacts to be viewed in the Actions tab.
-
-name: "Lint and test"
+name: "Lint and Test"
 
 on:
   push:
-    branches: [ "develop", "main"]
+    branches: [main]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "develop" ]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -15,45 +12,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint_and_test:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: |
-          pipx install poetry==1.2.2
-          poetry config virtualenvs.in-project true
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-          cache: 'poetry'
+      - name: Install poetry
+        run: |
+          pipx install poetry
+          poetry config virtualenvs.in-project true
       - name: Install dependencies
-        run: |
-          poetry install --no-interaction --no-ansi
-
+        run: poetry install --no-interaction --no-ansi
       - name: Lint with flake8
-        run: |
-          mkdir -p ${{ github.workspace }}/logs/lint
-          # stop the build if there are Python syntax errors or undefined names
-          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          poetry run flake8 . --count --exit-zero --statistics --output-file=${{ github.workspace }}/logs/lint/flake8-testresults.xml --format junit-xml
+        run: poetry run flake8 . --count --show-source --statistics
 
-      - name: Test with pytest
-        run: |
-          mkdir -p ${{ github.workspace }}/logs/pytest
-          poetry run pytest --cov=synth_timeseries --cov-report=xml --cov-report=html --junitxml=${{ github.workspace }}/logs/pytest/pytest-testresults.xml
-
-      - name: Publish linter results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          junit_files: "${{ github.workspace }}/logs/lint/*testresults.xml"
-          check_name: "Linter Results"
-
-      - name: Publish pytest results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          junit_files: "${{ github.workspace }}/logs/pytest/*testresults.xml"
-          check_name: "Pytest Results"
+          python-version: ${{ matrix.python-version }}
+      - name: Install poetry
+        run: |
+          pipx install poetry
+          poetry config virtualenvs.in-project true
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-ansi
+      - name: Run tests with coverage
+        run: poetry run pytest --cov=synth_timeseries --cov-report=xml --cov-report=term-missing
