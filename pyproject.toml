@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "synth-timeseries"
+version = "0.1.0"
+description = "A Python library for generating synthetic financial time series using stochastic processes"
+authors = ["Dr. Timotheos Paraskevopoulos"]
+readme = "README.md"
+packages = [{include = "synth_timeseries"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Office/Business :: Financial",
+]
+license = "MIT"
+repository = "https://github.com/timpara/synth-timeseries"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "1.5.2"
+numpy = "1.24.1"
+statsmodels = "^0.14.1"
+matplotlib = "^3.8.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+pre-commit = "^2.20.0"
+flake8 = "^6.0.0"
+flake8_formatter_junit_xml = "^0.0.6"
+isort = "^5.12.0"
+mypy = "^0.991"
+commitizen = "^2.40.0"
+python-dotenv = "^0.21.0"
+interrogate = "^1.5.0"
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-xdist = "^3.1.0"
+pyyaml = "^6.0"
+tomli = "2.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+    target-version = ['py38','py39','py310']
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+markers = [
+    "functional: marks functional tests, requiring multiple modules",
+    "integration: marks test requiring service integration",
+]
+log_cli = 1
+log_cli_level = "INFO"
+log_cli_format = "[%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%d/%m %H:%M:%S"
+testpaths = [
+    "tests"
+]
+python_files = [
+    "test_*.py",
+    "*_test.py",
+    "*Test.py",
+]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+version_files = [
+    "pyproject.toml:version",
+    "synth_timeseries/__init__.py:__version__"
+]
+tag_format = "v$version"
+update_changelog_on_bump = true

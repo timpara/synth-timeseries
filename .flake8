@@ -1,0 +1,28 @@
+[flake8]
+extend-ignore =
+    # Whitespace before ':'
+    E203,
+    # Block comment should start with '# '
+    E265,
+    # Too many leading '#' for block comment
+    E266,
+    # Module level import not at top of file
+    E402,
+    # Line break occurred before a binary operator
+    W503,
+    # Line too long (> max-line-length)
+    E501
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    notebooks,
+    env,
+    .env,
+    .venv,
+    .mypy_cache,
+    .pytest_cache,
+    .ipynb_checkpoints
+max-complexity=15
+max-line-length=110
