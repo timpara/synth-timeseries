@@ -59,7 +59,9 @@ class GeometricBrownianMotion:
         cumulative_dW = np.cumsum(dW)
 
         drift = (
-            (self.mu - 0.5 * self.sigma**2) * np.arange(1, self.num_steps + 1) * self.dt
+            (self.mu - 0.5 * self.sigma**2)
+            * np.arange(1, self.num_steps + 1)
+            * self.dt
         )
         diffusion = self.sigma * cumulative_dW
 
