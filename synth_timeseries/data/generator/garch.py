@@ -1,27 +1,38 @@
+"""GARCH (Generalized Autoregressive Conditional Heteroskedasticity) process generator."""
+
 import numpy as np
 
 
 class GARCHProcess:
-    """
-    The GARCH (Generalized Autoregressive Conditional Heteroskedasticity) process is a statistical model for
-    estimating financial market volatility. It models volatility clustering,
-    where high volatility periods are often followed by similar periods.
-    The GARCHProcess class in Python initializes with parameters defining
-    the GARCH model. The reset method initializes arrays for the simulation,
-    and the simulate method generates the GARCH process.
+    """Generalized Autoregressive Conditional Heteroskedasticity (GARCH) process.
+
+    The GARCH process models time-varying volatility in financial returns.
+    It captures volatility clustering, where high-volatility periods tend
+    to be followed by high-volatility periods. The conditional variance at
+    each step depends on past squared returns and past conditional variances.
+
+    Parameters
+    ----------
+    omega : float, optional
+        Constant term (long-run variance weight). Default is 0.1.
+    alpha : float, optional
+        Coefficient for lagged squared returns (ARCH term). Default is 0.1.
+    beta : float, optional
+        Coefficient for lagged conditional variance (GARCH term). Default is 0.8.
+    dt : float, optional
+        Time step size. Default is 0.01.
+    num_steps : int, optional
+        Number of time steps to simulate. Default is 1000.
     """
 
-    def __init__(self, omega=0.1, alpha=0.1, beta=0.8, dt=0.01, num_steps=1000):
-        """
-        Initialize the GARCH process.
-
-        Parameters:
-            - omega (float): Constant term in the GARCH model. Default: 0.1
-            - alpha (float): Coefficient for lagged squared returns in the GARCH model. Default: 0.1
-            - beta (float): Coefficient for lagged conditional variances in the GARCH model. Default: 0.8
-            - dt (float): Time step size. Default: 0.01
-            - num_steps (int): Number of steps for simulation. Default: 1000
-        """
+    def __init__(
+        self,
+        omega: float = 0.1,
+        alpha: float = 0.1,
+        beta: float = 0.8,
+        dt: float = 0.01,
+        num_steps: int = 1000,
+    ) -> None:
         self.omega = omega
         self.alpha = alpha
         self.beta = beta
@@ -29,13 +40,19 @@ class GARCHProcess:
         self.num_steps = num_steps
         self.reset()
 
-    def reset(self):
-        """Reset the process."""
+    def reset(self) -> None:
+        """Reset the process state."""
         self.conditional_variance = np.ones(self.num_steps) * self.omega
         self.returns = np.zeros(self.num_steps)
 
-    def simulate(self):
-        """Simulate the GARCH process."""
+    def simulate(self) -> np.ndarray:
+        """Simulate the GARCH process.
+
+        Returns
+        -------
+        numpy.ndarray
+            Array of simulated returns with length ``num_steps``.
+        """
         shocks = np.random.normal(0, 1, size=self.num_steps)
         squared_returns = np.zeros_like(shocks)
 
